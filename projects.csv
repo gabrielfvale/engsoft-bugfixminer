@@ -1,0 +1,5 @@
+Name;Owner;Manager;Category;JiraName;JiraRepository;GitRepository;Released;Site
+Hadoop Core;ASF;Apache Hadoop Committee;big-data;HADOOP;https://issues.apache.org/jira/;https://gitbox.apache.org/repos/asf/hadoop.git;2006;http://hadoop.apache.org
+Hadoop Yarn;ASF;Apache Hadoop Committee;big-data;YARN;https://issues.apache.org/jira/;https://gitbox.apache.org/repos/asf/hadoop.git;2012;http://hadoop.apache.org
+Hadoop HDFS;ASF;Apache Hadoop Committee;big-data;HDFS;https://issues.apache.org/jira/;https://gitbox.apache.org/repos/asf/hadoop.git;2009;http://hadoop.apache.org
+Hadoop MapReduce;ASF;Apache Hadoop Committee;big-data;MAPREDUCE;https://issues.apache.org/jira/;https://gitbox.apache.org/repos/asf/hadoop.git;2009;http://hadoop.apache.org

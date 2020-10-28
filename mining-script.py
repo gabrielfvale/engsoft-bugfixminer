@@ -9,6 +9,7 @@ os.system("pip3 install -r requirements.txt --user --upgrade")
 import sys
 from jira.client import JIRA
 from jira.exceptions import JIRAError
+from pydriller import Commit
 from pydriller import RepositoryMining
 from pydriller.domain.commit import ModificationType
 from datetime import datetime
@@ -104,7 +105,7 @@ class JiraBugInfo:
                 self.outwardIssueLinks]
 
 
-def fillJiraBugInfo(issue, jira, jira_project, project_owner, project_manager, project_category):
+def fillJiraBugInfo(issue, jira: JIRA, jira_project: str, project_owner: str, project_manager: str, project_category: str) -> JiraBugInfo:
     bugInfo = JiraBugInfo(jira_project, project_owner, project_manager, project_category, issue.id, issue.key, issue.fields.priority, issue.fields.status)
     
     if(hasattr(issue.fields, "reporter")):
@@ -205,7 +206,7 @@ def fillJiraBugInfo(issue, jira, jira_project, project_owner, project_manager, p
     return bugInfo
 
     
-def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, project_manager, project_category, offset, since_date, to_date):
+def fetchBugFixInfoFromJira(jira_repository: str, jira_project: str, project_owner: str, project_manager: str, project_category: str, offset: str, since_date: datetime, to_date: datetime) -> tuple:
     jira_options = {'server': jira_repository}
     jira = JIRA(options=jira_options)
     issue_fields = 'project, id, key, priority, status, reporter, assignee, issuelinks, summary, description, components, comment, created, resolutiondate, watchers, attachment, versions, fixVersions'
@@ -213,7 +214,7 @@ def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, projec
     orderBy = ' order by id asc'
 
     fetched_issues = jira.search_issues(jql_str=(query + orderBy), fields=issue_fields, maxResults=offset)
-    
+
     bugs = {}
 
     if(fetched_issues is None or len(fetched_issues) <= 0):
@@ -223,7 +224,6 @@ def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, projec
     length = len(fetched_issues)
     count = 0    
     
-
     while (length > 0 and length <= offset):
         count += 1
         last_fetched_issue = fetched_issues[-1]
@@ -240,7 +240,7 @@ def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, projec
     return bugs.values()
 
 
-def jiraToCSV(project, issues):
+def jiraToCSV(project: str, issues: tuple) -> None:
 
     header = ['Project',
               'Owner',              
@@ -283,7 +283,7 @@ def jiraToCSV(project, issues):
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
 
 
-def mineJira(jira_repository, project, owner, manager, category, since_date, to_date):
+def mineJira(jira_repository: str, project: str, owner: str, manager: str, category: str, since_date: datetime, to_date: datetime) -> None:
     print("  [Step-1.2] Fetching bug-fix info from Jira...")
     mined_issues = fetchBugFixInfoFromJira(jira_repository, project, owner, manager, category, 500, since_date, to_date)
 
@@ -365,7 +365,7 @@ class GitBugInfo:
                 self.testDelLines]
 
 
-def fillGitBugInfo(bugInfo, commit):            
+def fillGitBugInfo(bugInfo: GitBugInfo, commit: Commit) -> None:            
     if(commit.merge):
         bugInfo.hasMergeCommit = 1
 
@@ -424,7 +424,7 @@ def fillGitBugInfo(bugInfo, commit):
             bugInfo.nonSrcDelLines += modification.removed
 
     
-def fetchBugFixInfoFromGit(git_repositories, jira_issues_keys, since_date, to_date):
+def fetchBugFixInfoFromGit(git_repositories: list, jira_issues_keys: list, since_date: datetime, to_date: datetime) -> list:
     issues = {}
     offset = 0;
     interation = 1
@@ -454,7 +454,7 @@ def fetchBugFixInfoFromGit(git_repositories, jira_issues_keys, since_date, to_da
     return [values for values in issues.values()]
 
 
-def gitToCSV(project, issues):
+def gitToCSV(project: str, issues: list) -> None:
 
     header = ['Key',
               'HasMergeCommit',
@@ -492,7 +492,7 @@ def gitToCSV(project, issues):
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
 
 
-def mineGit(git_repositories, project, since_date, to_date):
+def mineGit(git_repositories: list, project: str, since_date: datetime, to_date: datetime) -> None:
 
     mined_issues = []
 
@@ -511,7 +511,7 @@ def mineGit(git_repositories, project, since_date, to_date):
 
 #================================Mining utility code================================#
 
-def filterTopFrequentWords(text):
+def filterTopFrequentWords(text: str) -> str:
     if(text is not None):
         text = text.lower()
 
@@ -543,19 +543,19 @@ def filterTopFrequentWords(text):
     return text
 
 
-def hasSrcExtension(file_name):
+def hasSrcExtension(file_name: str) -> bool:
     src_extensions = (".clj", ".scala", ".java", ".py", ".sc", ".js", ".c", ".hpp", ".cpp",
                       ".rb", ".go", ".groovy", ".pl", ".pm", ".t", ".pod", ".sh", ".h", ".php", ".sql_in", ".py_in")
     return file_name.endswith(src_extensions)
 
-def isTest(file_path):
+def isTest(file_path: str) -> bool:
     test_clues = ["/test/", "test/", "/test", "/tests/", "tests/", "/tests"]
     for clue in test_clues:
       if(clue in file_path):
         return True
     return False
 
-def extractKeys(message):
+def extractKeys(message: str) -> list:
     keys = []
     
     if(message is None):
@@ -567,7 +567,7 @@ def extractKeys(message):
     return keys
 
 
-def isValidKey(message):
+def isValidKey(message: str) -> None:
     if(message is None):
         return False
     
@@ -579,7 +579,7 @@ def isValidKey(message):
 #================================Bug-Fix dataset mining code================================#
 
 
-def loadJiraBugFixDataset(project):
+def loadJiraBugFixDataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/" + project.lower() +"-jira-bug-fix-dataset.csv",
                            index_col=None,
                            header=0,
@@ -589,7 +589,7 @@ def loadJiraBugFixDataset(project):
                                         'FirstAttachmentDate', 'LastAttachmentDate',
                                         'FirstAttachedPatchDate', 'LastAttachedPatchDate'])
         
-def loadGitBugFixDataset(project):
+def loadGitBugFixDataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/" + project.lower() +"-git-bug-fix-dataset.csv",
                            index_col=None, header=0,
                            delimiter=';',
@@ -597,7 +597,7 @@ def loadGitBugFixDataset(project):
                                         'CommittersFirstCommitDate', 'CommittersLastCommitDate'])        
 
 
-def loadBugFixDataset(project):
+def loadBugFixDataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/" + project.lower() +"-full-bug-fix-dataset.csv",
                            index_col=None,
                            header=0,
@@ -609,7 +609,7 @@ def loadBugFixDataset(project):
                                         'AuthorsFirstCommitDate', 'AuthorsLastCommitDate',
                                         'CommittersFirstCommitDate', 'CommittersLastCommitDate'])
 
-def runThirdStep(project_key, project_name):
+def runThirdStep(project_key: str, project_name: str) -> None:
     print("  [Step-3.0] Joining and cleaning bug-fix info of " + project_name + " from Jira and Git repos")
     print("  [Step-3.1] Loading CSV with Jira bug-fix info...")
     jira_issues = loadJiraBugFixDataset(project_key)
@@ -633,16 +633,16 @@ def runThirdStep(project_key, project_name):
         clean_dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
 
 
-def runSecondStep(git_repository, project, since_date, to_date):
+def runSecondStep(git_repository: list, project: str, since_date: datetime, to_date: datetime) -> None:
     print("  [Step-2.0] Extracting bug-fix info of " + project + " from Git repository...")
     mineGit(git_repository, project, since_date, to_date)
 
 
-def runFirstStep(jira_repository, project, owner, manager, category, since_date, to_date):
+def runFirstStep(jira_repository: str, project: str, owner: str, manager: str, category: str, since_date: datetime, to_date: datetime) -> None:
     print("  [Step-1.0] Extracting bug-fix info of " + project + " from Jira repo at: " + jira_repository)
     mineJira(jira_repository, project, owner, manager, category, since_date.strftime("%Y/%m/%d"), to_date.strftime("%Y/%m/%d"))
 
-def mineBugFix(since_date, to_date):
+def mineBugFix(since_date: datetime, to_date: datetime) -> None:
     projects = pandas.read_csv(projects_path, index_col=None, header=0, delimiter=';')
     for index, row in projects.iterrows():
         start_date = datetime.now()
@@ -659,7 +659,7 @@ def mineBugFix(since_date, to_date):
 
 #================================Bug change log dataset mining code================================#
         
-def fetchBugChangeLog(jira, project, manager, category, issue_key):
+def fetchBugChangeLog(jira: JIRA, project: str, manager: str, category: str, issue_key: str) -> list:
     events = []
     
     try:
@@ -701,7 +701,7 @@ def fetchBugChangeLog(jira, project, manager, category, issue_key):
     return events            
     
 
-def mineBugsChangeLog():
+def mineBugsChangeLog() -> None:
     
     last_repo = None
     
@@ -752,7 +752,7 @@ def mineBugsChangeLog():
         
 #================================Bug comments log mining code================================#
         
-def fetchBugCommentsLog(jira, project, manager, category, issue_key):
+def fetchBugCommentsLog(jira: JIRA, project: str, manager: str, category: str, issue_key: str) -> list:
     events = []
     
     try:
@@ -778,7 +778,7 @@ def fetchBugCommentsLog(jira, project, manager, category, issue_key):
     return events
     
 
-def mineBugsCommentsLog():
+def mineBugsCommentsLog() -> None:
     
     last_repo = None
     
@@ -830,7 +830,7 @@ def mineBugsCommentsLog():
 
 #================================Bug commits log mining code================================#
         
-def fetchBugCommitLog(project, manager, category, bug_key, commit):
+def fetchBugCommitLog(project: str, manager: str, category: str, bug_key: str, commit: Commit) -> list:
     events = []
     
     isMerge = 0
@@ -848,13 +848,13 @@ def fetchBugCommitLog(project, manager, category, bug_key, commit):
 
         isSrc = 0
         
-        isTest = 0
+        is_test = 0
         
         if(hasSrcExtension(modification.filename)):
             isSrc = 1
             
             if(isTest(file_path)):
-                isTest = 1
+                is_test = 1
 
         
         events.append([project, 
@@ -872,7 +872,7 @@ def fetchBugCommitLog(project, manager, category, bug_key, commit):
                         file_path,
                         modification.change_type.name,
                         isSrc,
-                        isTest,
+                        is_test,
                         modification.added,
                         modification.removed,
                         len(modification.methods),
@@ -883,7 +883,7 @@ def fetchBugCommitLog(project, manager, category, bug_key, commit):
 
     return events
 
-def mineBugsCommitsLog(since_date, to_date):
+def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
     last_repo = []
     
     projects = pandas.read_csv(projects_path, index_col=None, header=0, delimiter=';')

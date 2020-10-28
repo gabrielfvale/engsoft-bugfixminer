@@ -27,7 +27,14 @@ projects_path = r'projects.csv'
 #================================Jira mining related code================================#
 
 class JiraBugInfo:
-    def __init__(self, issue_project, project_owner, project_manager, project_category, issue_id, issue_key, issue_priority, issue_status):
+    def __init__(self, 
+                 issue_project, 
+                 project_owner, 
+                 project_manager, 
+                 project_category, 
+                 issue_id, issue_key, 
+                 issue_priority, 
+                 issue_status):
         self.project = issue_project
         self.owner = project_owner
         self.manager = project_manager
@@ -60,7 +67,7 @@ class JiraBugInfo:
         self.inwardIssueLinks = None
         self.outwardIssueLinks = None
 
-    def toList(self):
+    def to_list(self):
         self.summaryTopWords = filterTopFrequentWords(self.summaryTopWords)
         self.descriptionTopWords = filterTopFrequentWords(self.descriptionTopWords)
         self.commentsTopWords = filterTopFrequentWords(self.commentsTopWords)
@@ -270,7 +277,7 @@ def jiraToCSV(project, issues):
 
 
     for issue in issues:
-        dataset = dataset.append(pandas.Series(issue.toList(), index=dataset.columns), ignore_index=True)
+        dataset = dataset.append(pandas.Series(issue.to_list(), index=dataset.columns), ignore_index=True)
 
     with open("dataset/snapshot/" + project.lower() +"-jira-bug-fix-dataset.csv", 'a') as file:
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
@@ -317,7 +324,7 @@ class GitBugInfo:
 
 
         
-    def toList(self):
+    def to_list(self):
         commitMessageTopWords = filterTopFrequentWords('\n'.join([message for message in self.commitsMessages]))
 
         if(len(self.authorsDates) > 0):
@@ -479,7 +486,7 @@ def gitToCSV(project, issues):
 
 
     for issue in issues:
-        dataset = dataset.append(pandas.Series(issue.toList(), index=dataset.columns), ignore_index=True)
+        dataset = dataset.append(pandas.Series(issue.to_list(), index=dataset.columns), ignore_index=True)
 
     with open("dataset/snapshot/" + project.lower() +"-git-bug-fix-dataset.csv", 'a') as file:
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
@@ -493,7 +500,7 @@ def mineGit(git_repositories, project, since_date, to_date):
     jira_issues = loadJiraBugFixDataset(project)
 
     print("  [Step-2.2] Selecting bug issues keys from Jira bug-fix info...")
-    project_issues_keys = jira_issues['Key'].tolist()
+    project_issues_keys = jira_issues['Key'].to_list()
 
     print("  [Step-2.3] Fetching bug-fix info from Git...")
     mined_issues = fetchBugFixInfoFromGit(git_repositories, project_issues_keys, since_date, to_date)
@@ -709,7 +716,7 @@ def mineBugsChangeLog():
         print("  [Step-1.0] Loading CSV with bug-fix info...")
         dataset = loadBugFixDataset(row['JiraName'])
 
-        issues_keys = dataset['Key'].tolist()
+        issues_keys = dataset['Key'].to_list()
         print("  [Step-2.0] Mining change log of "  + str(len(issues_keys)) + " bug issues...")
 
         if(last_repo is None or last_repo != row['JiraRepository']):    
@@ -786,7 +793,7 @@ def mineBugsCommentsLog():
         print("  [Step-1.0] Loading CSV with bug-fix info...")
         dataset = loadBugFixDataset(row['JiraName'])
 
-        issues_keys = dataset['Key'].tolist()
+        issues_keys = dataset['Key'].to_list()
         print("  [Step-2.0] Mining comments log of "  + str(len(issues_keys)) + " bug issues...")
 
         if(last_repo is None or last_repo != row['JiraRepository']):    
@@ -897,7 +904,7 @@ def mineBugsCommitsLog(since_date, to_date):
         dataset = loadBugFixDataset(row['JiraName'])
 
 
-        bug_keys_list = dataset['Key'].tolist()
+        bug_keys_list = dataset['Key'].to_list()
         print("  [Step-2.0] Mining commits log of "  + str(len(bug_keys_list)) + " bug issues...") 
 
         if(last_repo != row['GitRepository'].split('#')):  

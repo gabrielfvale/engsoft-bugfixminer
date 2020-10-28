@@ -7,13 +7,13 @@ import os
 os.system("pip3 install -r requirements.txt --user --upgrade")
 
 import sys
+import pandas
+import re
 from jira.client import JIRA
 from jira.exceptions import JIRAError
 from pydriller import RepositoryMining
 from pydriller.domain.commit import ModificationType
 from datetime import datetime
-import pandas
-import re
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 from nltk import FreqDist
@@ -27,7 +27,9 @@ projects_path = r'projects.csv'
 #================================Jira mining related code================================#
 
 class JiraBugInfo:
-    def __init__(self, issue_project, project_owner, project_manager, project_category, issue_id, issue_key, issue_priority, issue_status):
+    def __init__(self, issue_project, project_owner, project_manager,
+                 project_category, issue_id, issue_key, issue_priority, 
+                 issue_status):
         self.project = issue_project
         self.owner = project_owner
         self.manager = project_manager
@@ -59,6 +61,7 @@ class JiraBugInfo:
         self.lastAttachedPatchDate = None
         self.inwardIssueLinks = None
         self.outwardIssueLinks = None
+
 
     def toList(self):
         self.summaryTopWords = filterTopFrequentWords(self.summaryTopWords)
@@ -97,8 +100,11 @@ class JiraBugInfo:
                 self.outwardIssueLinks]
 
 
-def fillJiraBugInfo(issue, jira, jira_project, project_owner, project_manager, project_category):
-    bugInfo = JiraBugInfo(jira_project, project_owner, project_manager, project_category, issue.id, issue.key, issue.fields.priority, issue.fields.status)
+def fillJiraBugInfo(issue, jira, jira_project, project_owner, 
+                    project_manager, project_category):
+    bugInfo = JiraBugInfo(jira_project, project_owner, project_manager, 
+                          project_category, issue.id, issue.key, 
+                          issue.fields.priority, issue.fields.status)
     
     if(hasattr(issue.fields, "reporter")):
         if(issue.fields.reporter is not None):
@@ -149,11 +155,15 @@ def fillJiraBugInfo(issue, jira, jira_project, project_owner, project_manager, p
 
     if(hasattr(issue.fields, "versions")):
         if(issue.fields.versions):
-            bugInfo.affectsVersions = ' '.join([version.name for version in reversed(issue.fields.versions)])
+            bugInfo.affectsVersions = ' '.join(
+                    [version.name for version in reversed(
+                    issue.fields.versions)])
 
     if(hasattr(issue.fields, "fixVersions")):
         if(issue.fields.fixVersions):
-            bugInfo.fixVersions = ' '.join([version.name for version in reversed(issue.fields.fixVersions)])
+            bugInfo.fixVersions = ' '.join(
+                    [version.name for version in reversed(
+                    issue.fields.fixVersions)])
 
     if(hasattr(issue.fields, "watches")):
         bugInfo.numberOfWatchers = jira.watchers(issue).watchCount
@@ -193,12 +203,15 @@ def fillJiraBugInfo(issue, jira, jira_project, project_owner, project_manager, p
             bugInfo.lastCommentDate = comment_dates[-1]
 
         if(issue.fields.comment.comments):
-            bugInfo.commentsTopWords = '\n'.join([comment.body for comment in issue.fields.comment.comments])
+            bugInfo.commentsTopWords = '\n'.join(
+                    [comment.body for comment in issue.fields.comment.comments])
             
     return bugInfo
 
     
-def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, project_manager, project_category, offset, since_date, to_date):
+def fetchBugFixInfoFromJira(jira_repository, jira_project, project_owner, 
+                            project_manager, project_category, offset, 
+                            since_date, to_date):
     jira_options = {'server': jira_repository}
     jira = JIRA(options=jira_options)
     issue_fields = 'project, id, key, priority, status, reporter, assignee, issuelinks, summary, description, components, comment, created, resolutiondate, watchers, attachment, versions, fixVersions'

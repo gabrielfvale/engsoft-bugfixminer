@@ -245,7 +245,8 @@ def fetch_bug_fix_info_from_jira(
                       versions,
                       fixVersions'''
     query = 'project=' + jira_project + \
-        ' and issuetype=bug and status in (Resolved, Closed) and resolution in (Fixed) and created>=\"' + \
+        ' and issuetype=bug and status in (Resolved, Closed) ' + \
+        'and resolution in (Fixed) and created>=\"' + \
         since_date + '\" and resolutiondate<=\"' + to_date + '\"'
     orderBy = ' order by id asc'
 
@@ -284,7 +285,8 @@ def fetch_bug_fix_info_from_jira(
 
         fetched_issues = jira.search_issues(jql_str=(query
                                                      + ' and id>'
-                                                     + str(last_fetched_issue.id)
+                                                     + str(
+                                                      last_fetched_issue.id)
                                                      + orderBy),
                                             fields=issue_fields,
                                             maxResults=offset)

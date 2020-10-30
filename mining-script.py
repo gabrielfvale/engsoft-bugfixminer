@@ -5,17 +5,17 @@
 
 import os
 import sys
-os.system("pip3 install -r requirements.txt --user --upgrade")
-
+import pandas
+import re
+# os.system("pip3 install -r requirements.txt --user --upgrade")
 from jira.client import JIRA
 from jira.exceptions import JIRAError
 from pydriller import Commit
 from pydriller import RepositoryMining
 from datetime import datetime
-import pandas
-import re
 from lib.jira_mining import mine_jira, loadJiraBugFixDataset
-from lib.mining_utils import isTest, hasSrcExtension, extractKeys, filter_top_frequent_words, isValidKey
+from lib.mining_utils import isTest, hasSrcExtension, extractKeys
+from lib.mining_utils import filter_top_frequent_words, isValidKey
 from lib.git_mining import loadGitBugFixDataset, mine_git
 
 
@@ -136,8 +136,10 @@ def mineBugFix(since_date: datetime, to_date: datetime) -> None:
 
         runThirdStep(row['JiraName'], row['Name'])
         duration_time = datetime.now() - start_date
-        print(">Done! Duration time " + str(duration_time.total_seconds()) + "s")
-        print("==============================================================================================================")
+        print(">Done! Duration time "
+              + str(duration_time.total_seconds()) + "s")
+        print("===================================================" +
+              "===========================================================")
         print()
 
 
@@ -248,7 +250,9 @@ def mineBugsChangeLog() -> None:
                     offset = 0
 
                 for event in issue_timeline:
-                    log = log.append(pandas.Series(event, index=log.columns), ignore_index=True)
+                    log = log.append(
+                        pandas.Series(event, index=log.columns),
+                        ignore_index=True)
 
         if(offset > 0):
             print("  [Step-2.0."
@@ -264,8 +268,10 @@ def mineBugsChangeLog() -> None:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)
 
         duration_time = datetime.now() - start_date
-        print(">Done! Duration time " + str(duration_time.total_seconds()) + "s")
-        print("==============================================================================================================")
+        print(">Done! Duration time "
+              + str(duration_time.total_seconds()) + "s")
+        print("===================================================" +
+              "===========================================================")
 
 
 # =======================Bug comments log mining code======================= #
@@ -358,7 +364,9 @@ def mineBugsCommentsLog() -> None:
                     offset = 0
 
                 for event in issue_timeline:
-                    log = log.append(pandas.Series(event, index=log.columns), ignore_index=True)
+                    log = log.append(
+                        pandas.Series(event, index=log.columns),
+                        ignore_index=True)
 
         if(offset > 0):
             print("  [Step-2.0."
@@ -374,8 +382,10 @@ def mineBugsCommentsLog() -> None:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)
 
         duration_time = datetime.now() - start_date
-        print(">Done! Duration time " + str(duration_time.total_seconds()) + "s")
-        print("==============================================================================================================")
+        print(">Done! Duration time "
+              + str(duration_time.total_seconds()) + "s")
+        print("===================================================" +
+              "===========================================================")
 
 
 # =======================Bug commits log mining code======================= #
@@ -504,7 +514,9 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
                                                        commit)
 
                     for change in commit_changes:
-                        log = log.append(pandas.Series(change, index=log.columns), ignore_index=True)
+                        log = log.append(
+                            pandas.Series(change, index=log.columns),
+                            ignore_index=True)
 
                     if(len(keys_in_message) <= 1):
                         break
@@ -534,8 +546,10 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)
 
         duration_time = datetime.now() - start_date
-        print(">Done! Duration time " + str(duration_time.total_seconds()) + "s")
-        print("==============================================================================================================")
+        print(">Done! Duration time "
+              + str(duration_time.total_seconds()) + "s")
+        print("===================================================" +
+              "===========================================================")
 
 # ==============================Run study code============================== #
 

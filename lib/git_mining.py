@@ -1,9 +1,10 @@
+import pandas
 from pydriller import Commit
 from pydriller import RepositoryMining
 from pydriller.domain.commit import ModificationType
 from datetime import datetime
-import pandas 
-from .mining_utils import filter_top_frequent_words, isTest, isValidKey, hasSrcExtension, extractKeys
+from .mining_utils import filter_top_frequent_words, isTest
+from .mining_utils import isValidKey, hasSrcExtension, extractKeys
 from .jira_mining import loadJiraBugFixDataset
 
 
@@ -152,7 +153,8 @@ def fetchBugFixInfoFromGit(
     offset = 0
     interation = 1
     for issue_key in jira_issues_keys:
-        issues[issue_key.upper().strip()] = GitBugInfo(issue_key.upper().strip())
+        issues[issue_key.upper().strip()] = GitBugInfo(
+                issue_key.upper().strip())
 
     for commit in RepositoryMining(
                 path_to_repo=git_repositories,
@@ -179,7 +181,11 @@ def fetchBugFixInfoFromGit(
                     break
 
     if(offset > 0):
-        print("  [Step 2.3." + str(interation) + "] " + str(offset) + " bug-related commits fetched from Git...")
+        print("  [Step 2.3."
+              + str(interation)
+              + "] "
+              + str(offset)
+              + " bug-related commits fetched from Git...")
 
     return [values for values in issues.values()]
 
@@ -215,7 +221,9 @@ def gitToCSV(project: str, issues: list) -> None:
     dataset = pandas.DataFrame(columns=header)
 
     for issue in issues:
-        dataset = dataset.append(pandas.Series(issue.to_list(), index=dataset.columns), ignore_index=True)
+        dataset = dataset.append(
+                pandas.Series(issue.to_list(), index=dataset.columns),
+                ignore_index=True)
 
     with open("dataset/snapshot/"
               + project.lower()

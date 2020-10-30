@@ -7,7 +7,6 @@ import os
 import sys
 import pandas
 import re
-# os.system("pip3 install -r requirements.txt --user --upgrade")
 from jira.client import JIRA
 from jira.exceptions import JIRAError
 from pydriller import Commit
@@ -557,6 +556,11 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
 since_date = datetime.strptime(str(sys.argv[1]), '%Y-%m-%d')
 to_date = datetime.strptime(str(sys.argv[2]), '%Y-%m-%d')
 projects_path = str(sys.argv[3])
+
+os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)
+os.makedirs(os.path.join("dataset", "commit-log"), exist_ok=True)
+os.makedirs(os.path.join("dataset", "comment-log"), exist_ok=True)
+os.makedirs(os.path.join("dataset", "changelog"), exist_ok=True)
 
 print("============================================BUG-FIX DATASET GEN=======================================================")
 mineBugFix(since_date, to_date)

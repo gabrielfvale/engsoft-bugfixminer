@@ -2,7 +2,7 @@ from jira.client import JIRA
 from jira.exceptions import JIRAError
 from datetime import datetime
 import pandas
-from .mining_utils import isTest, isValidKey, filter_top_frequent_words
+from .mining_utils import is_Test, is_Valid_Key, filter_top_frequent_words
 
 
 # ========================Jira mining related code======================== #
@@ -274,7 +274,7 @@ def fetch_bug_fix_info_from_jira(
               + " bug issues fetched from Jira...")
 
         for issue in fetched_issues:
-            if(isValidKey(issue.key)):
+            if(is_Valid_Key(issue.key)):
                 bugs[issue.key] = fill_jira_bug_info(
                     issue,
                     jira,
@@ -296,7 +296,7 @@ def fetch_bug_fix_info_from_jira(
     return bugs.values()
 
 
-def jiraToCSV(project: str, issues: tuple) -> None:
+def jira_To_CSV(project: str, issues: tuple) -> None:
 
     header = ['Project',
               'Owner',
@@ -361,10 +361,10 @@ def mine_jira(
         to_date)
 
     print("  [Step-1.3] Saving bug-fix info into CSV file...")
-    jiraToCSV(project, mined_issues)
+    jira_To_CSV(project, mined_issues)
 
 
-def loadJiraBugFixDataset(project: str) -> pandas.DataFrame:
+def load_Jira_BugFix_Dataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/"
                            + project.lower()
                            + "-jira-bug-fix-dataset.csv",

@@ -13,18 +13,18 @@ from pydriller import Commit
 from pydriller import RepositoryMining
 from datetime import datetime
 from lib.jira_mining import mine_jira, loadJiraBugFixDataset
-from lib.mining_utils import isTest, hasSrcExtension, extractKeys
-from lib.mining_utils import filter_top_frequent_words, isValidKey
-from lib.git_mining import loadGitBugFixDataset, mine_git
+from lib.mining_utils import isTest, has_Source_Extension, extract_Keys
+from lib.mining_utils import filter_top_frequent_words, is_Valid_Key
+from lib.git_mining import load_Git_BugFix_Dataset, mine_git
 
 
-projects_path = r'projects.csv'
+PROJECTS_PATH = r'projects.csv'
 
 
 # =======================Bug-Fix dataset mining code======================= #
 
 
-def loadBugFixDataset(project: str) -> pandas.DataFrame:
+def load_BugFix_Dataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/"
                            + project.lower()
                            + "-full-bug-fix-dataset.csv",
@@ -45,7 +45,7 @@ def loadBugFixDataset(project: str) -> pandas.DataFrame:
                                         'CommittersLastCommitDate'])
 
 
-def runThirdStep(project_key: str, project_name: str) -> None:
+def run_Third_Step(project_key: str, project_name: str) -> None:
     print("  [Step-3.0] Joining and cleaning bug-fix info of "
           + project_name
           + " from Jira and Git repos")
@@ -54,7 +54,7 @@ def runThirdStep(project_key: str, project_name: str) -> None:
     jira_issues = loadJiraBugFixDataset(project_key)
 
     print("  [Step-3.2] Loading CSV with Git bug-fix info...")
-    git_issues = loadGitBugFixDataset(project_key)
+    git_issues = load_Git_BugFix_Dataset(project_key)
 
     print("  [Step-3.3] Joining Jira and Git bug-fix infos...")
     raw_dataset = pandas.merge(jira_issues, git_issues, how='outer', on='Key')
@@ -74,7 +74,7 @@ def runThirdStep(project_key: str, project_name: str) -> None:
         clean_dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
 
 
-def runSecondStep(
+def run_Second_Step(
             git_repository: list,
             project: str,
             since_date: datetime,
@@ -85,7 +85,7 @@ def runSecondStep(
     mine_git(git_repository, project, since_date, to_date)
 
 
-def runFirstStep(
+def run_First_Step(
             jira_repository: str,
             project: str,
             owner: str,
@@ -106,12 +106,12 @@ def runFirstStep(
               to_date.strftime("%Y/%m/%d"))
 
 
-def mineBugFix(since_date: datetime, to_date: datetime) -> None:
-    projects = pandas.read_csv(projects_path,
+def mine_BugFix(since_date: datetime, to_date: datetime) -> None:
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         start_date = datetime.now()
         print(">Building a bug-fix dataset for the "
               + row['Name']
@@ -120,20 +120,20 @@ def mineBugFix(since_date: datetime, to_date: datetime) -> None:
 
         print(">Mining data sice " + str(since_date) + " to " + str(to_date))
 
-        runFirstStep(row['JiraRepository'],
-                     row['JiraName'],
-                     row['Owner'],
-                     row['Manager'],
-                     row['Category'],
-                     since_date,
-                     to_date)
+        run_First_Step(row['JiraRepository'],
+                       row['JiraName'],
+                       row['Owner'],
+                       row['Manager'],
+                       row['Category'],
+                       since_date,
+                       to_date)
 
-        runSecondStep(row['GitRepository'].split('#'),
-                      row['JiraName'],
-                      since_date,
-                      to_date)
+        run_Second_Step(row['GitRepository'].split('#'),
+                        row['JiraName'],
+                        since_date,
+                        to_date)
 
-        runThirdStep(row['JiraName'], row['Name'])
+        run_Third_Step(row['JiraName'], row['Name'])
         duration_time = datetime.now() - start_date
         print(">Done! Duration time "
               + str(duration_time.total_seconds()) + "s")
@@ -144,7 +144,7 @@ def mineBugFix(since_date: datetime, to_date: datetime) -> None:
 
 # ====================Bug change log dataset mining code==================== #
 
-def fetchBugChangeLog(
+def fetch_Bug_ChangeLog(
             jira: JIRA,
             project: str,
             manager: str,
@@ -190,16 +190,16 @@ def fetchBugChangeLog(
     return events
 
 
-def mineBugsChangeLog() -> None:
+def mine_Bugs_ChangeLog() -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -218,7 +218,7 @@ def mineBugsChangeLog() -> None:
               + start_date.strftime('%Y-%m-%d %H:%M:%S') + "]")
 
         print("  [Step-1.0] Loading CSV with bug-fix info...")
-        dataset = loadBugFixDataset(row['JiraName'])
+        dataset = load_BugFix_Dataset(row['JiraName'])
 
         issues_keys = dataset['Key'].to_list()
         print("  [Step-2.0] Mining change log of "
@@ -231,14 +231,14 @@ def mineBugsChangeLog() -> None:
             jira = JIRA(options=jira_options)
 
         for issue_key in issues_keys:
-            if(issue_key is not None and isValidKey(issue_key)):
+            if(issue_key is not None and is_Valid_Key(issue_key)):
                 offset += 1
-                issue_timeline = fetchBugChangeLog(jira,
-                                                   row['JiraName'],
-                                                   row['Manager'],
-                                                   row['Category'],
-                                                   issue_key)
-
+                issue_timeline = fetch_Bug_ChangeLog(jira,
+                                                     row['JiraName'],
+                                                     row['Manager'],
+                                                     row['Category'],
+                                                     issue_key)
+ 
                 if(offset == 500):
                     print("  [Step-2.0." + str(count)
                           + "] Change log of "
@@ -276,7 +276,7 @@ def mineBugsChangeLog() -> None:
 # =======================Bug comments log mining code======================= #
 
 
-def fetchBugCommentsLog(
+def fetch_Bug_CommentsLog(
             jira: JIRA,
             project: str,
             manager: str,
@@ -305,16 +305,16 @@ def fetchBugCommentsLog(
     return events
 
 
-def mineBugsCommentsLog() -> None:
+def mine_Bugs_CommentsLog() -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -331,7 +331,7 @@ def mineBugsCommentsLog() -> None:
               + start_date.strftime('%Y-%m-%d %H:%M:%S') + "]")
 
         print("  [Step-1.0] Loading CSV with bug-fix info...")
-        dataset = loadBugFixDataset(row['JiraName'])
+        dataset = load_BugFix_Dataset(row['JiraName'])
 
         issues_keys = dataset['Key'].to_list()
         print("  [Step-2.0] Mining comments log of "
@@ -344,13 +344,13 @@ def mineBugsCommentsLog() -> None:
             jira = JIRA(options=jira_options)
 
         for issue_key in issues_keys:
-            if(issue_key is not None and isValidKey(issue_key)):
+            if(issue_key is not None and is_Valid_Key(issue_key)):
                 offset += 1
-                issue_timeline = fetchBugCommentsLog(jira,
-                                                     row['JiraName'],
-                                                     row['Manager'],
-                                                     row['Category'],
-                                                     issue_key)
+                issue_timeline = fetch_Bug_CommentsLog(jira,
+                                                       row['JiraName'],
+                                                       row['Manager'],
+                                                       row['Category'],
+                                                       issue_key)
 
                 if(offset == 500):
                     print("  [Step-2.0."
@@ -389,7 +389,7 @@ def mineBugsCommentsLog() -> None:
 
 # =======================Bug commits log mining code======================= #
 
-def fetchBugCommitLog(
+def fetch_Bug_CommitLog(
             project: str,
             manager: str,
             category: str,
@@ -414,7 +414,7 @@ def fetchBugCommitLog(
 
         is_test = 0
 
-        if(hasSrcExtension(modification.filename)):
+        if(has_Source_Extension(modification.filename)):
             isSrc = 1
 
             if(isTest(file_path)):
@@ -446,15 +446,15 @@ def fetchBugCommitLog(
     return events
 
 
-def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
+def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
     last_repo = []
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -487,7 +487,7 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
               + start_date.strftime('%Y-%m-%d %H:%M:%S') + "]")
 
         print("  [Step-1.0] Loading CSV with bug-fix info...")
-        dataset = loadBugFixDataset(row['JiraName'])
+        dataset = load_BugFix_Dataset(row['JiraName'])
 
         bug_keys_list = dataset['Key'].to_list()
         print("  [Step-2.0] Mining commits log of "
@@ -501,16 +501,16 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
                                        since=since_date,
                                        to=to_date).traverse_commits():
             message = commit.msg.upper().strip()
-            keys_in_message = extractKeys(message)
+            keys_in_message = extract_Keys(message)
 
             for bug_key in bug_keys_list:
                 if(bug_key in keys_in_message):
                     tracked_commits.append(commit.hash)
-                    commit_changes = fetchBugCommitLog(row['JiraName'],
-                                                       row['Manager'],
-                                                       row['Category'],
-                                                       bug_key,
-                                                       commit)
+                    commit_changes = fetch_Bug_CommitLog(row['JiraName'],
+                                                         row['Manager'],
+                                                         row['Category'],
+                                                         bug_key,
+                                                         commit)
 
                     for change in commit_changes:
                         log = log.append(
@@ -546,7 +546,8 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
 
         duration_time = datetime.now() - start_date
         print(">Done! Duration time "
-              + str(duration_time.total_seconds()) + "s")
+              + str(duration_time.total_seconds())
+              + "s")
         print("===================================================" +
               "===========================================================")
 
@@ -555,7 +556,7 @@ def mineBugsCommitsLog(since_date: datetime, to_date: datetime) -> None:
 
 since_date = datetime.strptime(str(sys.argv[1]), '%Y-%m-%d')
 to_date = datetime.strptime(str(sys.argv[2]), '%Y-%m-%d')
-projects_path = str(sys.argv[3])
+PROJECTS_PATH = str(sys.argv[3])
 
 os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)
 os.makedirs(os.path.join("dataset", "commit-log"), exist_ok=True)
@@ -563,16 +564,16 @@ os.makedirs(os.path.join("dataset", "comment-log"), exist_ok=True)
 os.makedirs(os.path.join("dataset", "changelog"), exist_ok=True)
 
 print("============================================BUG-FIX DATASET GEN=======================================================")
-mineBugFix(since_date, to_date)
+mine_BugFix(since_date, to_date)
 print()
 print()
 print("============================================BUG CHANGE LOG DATASET GEN================================================")
-mineBugsChangeLog()
+mine_Bugs_ChangeLog()
 print()
 print()
 print("============================================BUG COMMENTS DATASET GEN=================================================")
-mineBugsCommentsLog()
+mine_Bugs_CommentsLog()
 print()
 print()
 print("============================================BUG COMMITS LOG DATASET GEN==============================================")
-mineBugsCommitsLog(since_date, to_date)
+mine_Bugs_CommitsLog(since_date, to_date)

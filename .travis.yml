@@ -5,7 +5,6 @@ language: python
 python:
   - "3.7"
   - "3.8"
-  - "pypy"
 
 # Instalar as dependências
 install:
@@ -14,7 +13,7 @@ install:
 
 # Script para rodar os tests
 script:
-  - py.test lib/test.py
+  - py.test tests/test_jira_bug_info.py
 
 #after_script:
 #notifications:

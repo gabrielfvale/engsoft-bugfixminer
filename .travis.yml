@@ -13,8 +13,8 @@ install:
    - pip install -r requirements.txt
 
 # Script para rodar os tests
-#script:
-#  - run test.py test
+script:
+  - py.test lib/test.py
 
 #after_script:
 #notifications:

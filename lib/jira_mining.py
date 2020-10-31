@@ -2,7 +2,7 @@ from jira.client import JIRA
 from jira.exceptions import JIRAError
 from datetime import datetime
 import pandas
-from .mining_utils import isTest, isValidKey, filter_top_frequent_words
+from .mining_utils import is_Test, is_Valid_Key, filter_top_frequent_words
 
 
 # ========================Jira mining related code======================== #

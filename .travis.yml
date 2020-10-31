@@ -9,7 +9,7 @@ python:
 
 # Instalar as dependências
 install:
-   - pip install .
+#   - pip install .
    - pip install -r requirements.txt
 
 # Script para rodar os tests

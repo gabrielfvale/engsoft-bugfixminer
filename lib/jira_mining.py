@@ -296,7 +296,7 @@ def fetch_bug_fix_info_from_jira(
     return bugs.values()
 
 
-def jiraToCSV(project: str, issues: tuple) -> None:
+def jira_To_CSV(project: str, issues: tuple) -> None:
 
     header = ['Project',
               'Owner',
@@ -364,7 +364,7 @@ def mine_jira(
     jiraToCSV(project, mined_issues)
 
 
-def loadJiraBugFixDataset(project: str) -> pandas.DataFrame:
+def load_Jira_BugFix_Dataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/"
                            + project.lower()
                            + "-jira-bug-fix-dataset.csv",

@@ -51,7 +51,7 @@ def filter_top_frequent_words(text: str) -> str:
     return text
 
 
-def hasSrcExtension(file_name: str) -> bool:
+def has_src_extension(file_name: str) -> bool:
     src_extensions = (".clj",
                       ".scala",
                       ".java",
@@ -76,7 +76,7 @@ def hasSrcExtension(file_name: str) -> bool:
     return file_name.endswith(src_extensions)
 
 
-def isTest(file_path: str) -> bool:
+def is_Test(file_path: str) -> bool:
     test_clues = ["/test/", "test/", "/test", "/tests/", "tests/", "/tests"]
     for clue in test_clues:
         if(clue in file_path):
@@ -84,7 +84,7 @@ def isTest(file_path: str) -> bool:
     return False
 
 
-def extractKeys(message: str) -> list:
+def extract_Keys(message: str) -> list:
     keys = []
 
     if(message is None):
@@ -96,7 +96,7 @@ def extractKeys(message: str) -> list:
     return keys
 
 
-def isValidKey(message: str) -> None:
+def is_Valid_Key(message: str) -> None:
     if(message is None):
         return False
 

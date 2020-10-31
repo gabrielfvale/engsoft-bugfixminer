@@ -18,7 +18,7 @@ from lib.mining_utils import filter_top_frequent_words, is_Valid_Key
 from lib.git_mining import load_Git_BugFix_Dataset, mine_git
 
 
-projects_path = r'projects.csv'
+PROJECTS_PATH = r'projects.csv'
 
 
 # =======================Bug-Fix dataset mining code======================= #
@@ -107,11 +107,11 @@ def run_First_Step(
 
 
 def mine_BugFix(since_date: datetime, to_date: datetime) -> None:
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         start_date = datetime.now()
         print(">Building a bug-fix dataset for the "
               + row['Name']
@@ -194,12 +194,12 @@ def mine_Bugs_ChangeLog() -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -309,12 +309,12 @@ def mine_Bugs_CommentsLog() -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -449,12 +449,12 @@ def fetch_Bug_CommitLog(
 def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
     last_repo = []
 
-    projects = pandas.read_csv(projects_path,
+    projects = pandas.read_csv(PROJECTS_PATH,
                                index_col=None,
                                header=0,
                                delimiter=';')
 
-    for index, row in projects.iterrows():
+    for _, row in projects.iterrows():
         log = pandas.DataFrame(columns=['Project',
                                         'Manager',
                                         'Category',
@@ -556,7 +556,7 @@ def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
 
 since_date = datetime.strptime(str(sys.argv[1]), '%Y-%m-%d')
 to_date = datetime.strptime(str(sys.argv[2]), '%Y-%m-%d')
-projects_path = str(sys.argv[3])
+PROJECTS_PATH = str(sys.argv[3])
 
 os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)
 os.makedirs(os.path.join("dataset", "commit-log"), exist_ok=True)

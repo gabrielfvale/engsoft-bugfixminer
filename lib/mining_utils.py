@@ -45,13 +45,14 @@ def filter_top_frequent_words(text: str) -> str:
         fdist = FreqDist(english_words)
         top_words = fdist.most_common(TOP_MOST_FREQUENT_WORDS)
         text = ' '.join([str(top_word[0])
-                         + ":" + str(top_word[1])
+                         + ":"
+                         + str(top_word[1])
                          for top_word in top_words])
 
     return text
 
 
-def has_src_extension(file_name: str) -> bool:
+def has_Source_Extension(file_name: str) -> bool:
     src_extensions = (".clj",
                       ".scala",
                       ".java",

@@ -274,7 +274,7 @@ def fetch_bug_fix_info_from_jira(
               + " bug issues fetched from Jira...")
 
         for issue in fetched_issues:
-            if(isValidKey(issue.key)):
+            if(is_Valid_Key(issue.key)):
                 bugs[issue.key] = fill_jira_bug_info(
                     issue,
                     jira,
@@ -361,7 +361,7 @@ def mine_jira(
         to_date)
 
     print("  [Step-1.3] Saving bug-fix info into CSV file...")
-    jiraToCSV(project, mined_issues)
+    jira_To_CSV(project, mined_issues)
 
 
 def load_Jira_BugFix_Dataset(project: str) -> pandas.DataFrame:

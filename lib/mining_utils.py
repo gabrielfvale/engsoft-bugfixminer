@@ -45,13 +45,14 @@ def filter_top_frequent_words(text: str) -> str:
         fdist = FreqDist(english_words)
         top_words = fdist.most_common(TOP_MOST_FREQUENT_WORDS)
         text = ' '.join([str(top_word[0])
-                         + ":" + str(top_word[1])
+                         + ":"
+                         + str(top_word[1])
                          for top_word in top_words])
 
     return text
 
 
-def hasSrcExtension(file_name: str) -> bool:
+def has_Source_Extension(file_name: str) -> bool:
     src_extensions = (".clj",
                       ".scala",
                       ".java",
@@ -76,7 +77,7 @@ def hasSrcExtension(file_name: str) -> bool:
     return file_name.endswith(src_extensions)
 
 
-def isTest(file_path: str) -> bool:
+def is_Test(file_path: str) -> bool:
     test_clues = ["/test/", "test/", "/test", "/tests/", "tests/", "/tests"]
     for clue in test_clues:
         if(clue in file_path):
@@ -84,7 +85,7 @@ def isTest(file_path: str) -> bool:
     return False
 
 
-def extractKeys(message: str) -> list:
+def extract_Keys(message: str) -> list:
     keys = []
 
     if(message is None):
@@ -96,7 +97,7 @@ def extractKeys(message: str) -> list:
     return keys
 
 
-def isValidKey(message: str) -> None:
+def is_Valid_Key(message: str) -> None:
     if(message is None):
         return False
 

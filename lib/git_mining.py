@@ -3,9 +3,9 @@ from pydriller import Commit
 from pydriller import RepositoryMining
 from pydriller.domain.commit import ModificationType
 from datetime import datetime
-from .mining_utils import filter_top_frequent_words, isTest
-from .mining_utils import isValidKey, hasSrcExtension, extractKeys
-from .jira_mining import loadJiraBugFixDataset
+from .mining_utils import filter_top_frequent_words, is_Test
+from .mining_utils import is_Valid_Key, has_Source_Extension, extract_Keys
+from .jira_mining import load_Jira_BugFix_Dataset
 
 
 # =========================Git mining related code========================= #
@@ -103,8 +103,8 @@ def fill_git_bug_info(
         else:
             path = modification.new_path
 
-        if(hasSrcExtension(modification.filename)):
-            if(isTest(path)):
+        if(has_Source_Extension(modification.filename)):
+            if(is_Test(path)):
                 if(modification.change_type == ModificationType.ADD):
                     bugInfo.testAddFiles += 1
 
@@ -144,7 +144,7 @@ def fill_git_bug_info(
             bugInfo.nonSrcDelLines += modification.removed
 
 
-def fetchBugFixInfoFromGit(
+def fetch_BugFix_Info_From_Git(
             git_repositories: list,
             jira_issues_keys: list,
             since_date: datetime,
@@ -161,7 +161,7 @@ def fetchBugFixInfoFromGit(
                 since=since_date,
                 to=to_date).traverse_commits():
         message = commit.msg.upper().strip()
-        keys_in_message = extractKeys(message)
+        keys_in_message = extract_Keys(message)
 
         for issue_key in jira_issues_keys:
             if(issue_key in keys_in_message):
@@ -190,7 +190,7 @@ def fetchBugFixInfoFromGit(
     return [values for values in issues.values()]
 
 
-def gitToCSV(project: str, issues: list) -> None:
+def git_To_CSV(project: str, issues: list) -> None:
 
     header = ['Key',
               'HasMergeCommit',
@@ -240,23 +240,23 @@ def mine_git(
     mined_issues = []
 
     print("  [Step-2.1] Loading CSV file with bug-fix info from Jira...")
-    jira_issues = loadJiraBugFixDataset(project)
+    jira_issues = load_Jira_BugFix_Dataset(project)
 
     print("  [Step-2.2] Selecting bug issues keys from Jira bug-fix info...")
     project_issues_keys = jira_issues['Key'].to_list()
 
     print("  [Step-2.3] Fetching bug-fix info from Git...")
-    mined_issues = fetchBugFixInfoFromGit(
+    mined_issues = fetch_BugFix_Info_From_Git(
             git_repositories,
             project_issues_keys,
             since_date,
             to_date)
 
     print("  [Step-2.4] Saving bug-fix info into CSV file...")
-    gitToCSV(project, mined_issues)
+    git_To_CSV(project, mined_issues)
 
 
-def loadGitBugFixDataset(project: str) -> pandas.DataFrame:
+def load_Git_BugFix_Dataset(project: str) -> pandas.DataFrame:
     return pandas.read_csv("dataset/snapshot/"
                            + project.lower()
                            + "-git-bug-fix-dataset.csv",

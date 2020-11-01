@@ -5,7 +5,7 @@ from pydriller.domain.commit import ModificationType
 from datetime import datetime
 from .mining_utils import filter_top_frequent_words, is_Test
 from .mining_utils import is_Valid_Key, has_Source_Extension, extract_Keys
-from .jira_mining import loadJiraBugFixDataset
+from .jira_mining import load_Jira_BugFix_Dataset
 
 
 # =========================Git mining related code========================= #
@@ -240,7 +240,7 @@ def mine_git(
     mined_issues = []
 
     print("  [Step-2.1] Loading CSV file with bug-fix info from Jira...")
-    jira_issues = loadJiraBugFixDataset(project)
+    jira_issues = load_Jira_BugFix_Dataset(project)
 
     print("  [Step-2.2] Selecting bug issues keys from Jira bug-fix info...")
     project_issues_keys = jira_issues['Key'].to_list()

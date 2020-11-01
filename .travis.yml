@@ -14,6 +14,8 @@ install:
 # Script para rodar os tests
 script:
   - py.test tests/test_jira_bug_info.py
+  - py.test tests/test_git_mining.py
+  - py.test tests/test_mining_utils.py
 
 #after_script:
 #notifications:

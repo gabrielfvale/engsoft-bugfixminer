@@ -12,13 +12,10 @@ from jira.exceptions import JIRAError
 from pydriller import Commit
 from pydriller import RepositoryMining
 from datetime import datetime
-from lib.jira_mining import mine_jira, loadJiraBugFixDataset
-from lib.mining_utils import isTest, has_Source_Extension, extract_Keys
+from lib.jira_mining import mine_jira, load_Jira_BugFix_Dataset
+from lib.mining_utils import is_Test, has_Source_Extension, extract_Keys
 from lib.mining_utils import filter_top_frequent_words, is_Valid_Key
 from lib.git_mining import load_Git_BugFix_Dataset, mine_git
-
-
-PROJECTS_PATH = r'projects.csv'
 
 
 # =======================Bug-Fix dataset mining code======================= #
@@ -51,7 +48,7 @@ def run_Third_Step(project_key: str, project_name: str) -> None:
           + " from Jira and Git repos")
 
     print("  [Step-3.1] Loading CSV with Jira bug-fix info...")
-    jira_issues = loadJiraBugFixDataset(project_key)
+    jira_issues = load_Jira_BugFix_Dataset(project_key)
 
     print("  [Step-3.2] Loading CSV with Git bug-fix info...")
     git_issues = load_Git_BugFix_Dataset(project_key)
@@ -106,8 +103,8 @@ def run_First_Step(
               to_date.strftime("%Y/%m/%d"))
 
 
-def mine_BugFix(since_date: datetime, to_date: datetime) -> None:
-    projects = pandas.read_csv(PROJECTS_PATH,
+def mine_BugFix(projects_path: str, since_date: datetime, to_date: datetime) -> None:
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -190,11 +187,11 @@ def fetch_Bug_ChangeLog(
     return events
 
 
-def mine_Bugs_ChangeLog() -> None:
+def mine_Bugs_ChangeLog(projects_path: str) -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -305,11 +302,11 @@ def fetch_Bug_CommentsLog(
     return events
 
 
-def mine_Bugs_CommentsLog() -> None:
+def mine_Bugs_CommentsLog(projects_path: str) -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -417,7 +414,7 @@ def fetch_Bug_CommitLog(
         if(has_Source_Extension(modification.filename)):
             isSrc = 1
 
-            if(isTest(file_path)):
+            if(is_Test(file_path)):
                 is_test = 1
 
         events.append([project,
@@ -446,10 +443,10 @@ def fetch_Bug_CommitLog(
     return events
 
 
-def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
+def mine_Bugs_CommitsLog(projects_path: str, since_date: datetime, to_date: datetime) -> None:
     last_repo = []
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -556,7 +553,7 @@ def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
 
 since_date = datetime.strptime(str(sys.argv[1]), '%Y-%m-%d')
 to_date = datetime.strptime(str(sys.argv[2]), '%Y-%m-%d')
-PROJECTS_PATH = str(sys.argv[3])
+projects_path = str(sys.argv[3])
 
 os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)
 os.makedirs(os.path.join("dataset", "commit-log"), exist_ok=True)
@@ -564,16 +561,16 @@ os.makedirs(os.path.join("dataset", "comment-log"), exist_ok=True)
 os.makedirs(os.path.join("dataset", "changelog"), exist_ok=True)
 
 print("============================================BUG-FIX DATASET GEN=======================================================")
-mine_BugFix(since_date, to_date)
+mine_BugFix(PROJECTS_PATH, since_date, to_date)
 print()
 print()
 print("============================================BUG CHANGE LOG DATASET GEN================================================")
-mine_Bugs_ChangeLog()
+mine_Bugs_ChangeLog(PROJECTS_PATH)
 print()
 print()
 print("============================================BUG COMMENTS DATASET GEN=================================================")
-mine_Bugs_CommentsLog()
+mine_Bugs_CommentsLog(PROJECTS_PATH)
 print()
 print()
 print("============================================BUG COMMITS LOG DATASET GEN==============================================")
-mine_Bugs_CommitsLog(since_date, to_date)
+mine_Bugs_CommitsLog(PROJECTS_PATH, since_date, to_date)

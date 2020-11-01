@@ -588,7 +588,8 @@ def main():
     args = main_parser.parse_args()
     action = args.action;
 
-    projects_path = os.path.join(args.path)
+    if args.path:
+      projects_path = os.path.join(args.path)
 
     if action == "bugfix":
       os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)

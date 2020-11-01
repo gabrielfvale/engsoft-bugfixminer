@@ -3,6 +3,10 @@ from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 from nltk import FreqDist
 from nltk.tokenize import RegexpTokenizer
+import nltk
+
+nltk.download("stopwords")
+nltk.download("wordnet")
 
 TOP_MOST_FREQUENT_WORDS = 1000
 

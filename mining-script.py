@@ -12,8 +12,8 @@ from jira.exceptions import JIRAError
 from pydriller import Commit
 from pydriller import RepositoryMining
 from datetime import datetime
-from lib.jira_mining import mine_jira, loadJiraBugFixDataset
-from lib.mining_utils import isTest, has_Source_Extension, extract_Keys
+from lib.jira_mining import mine_jira, load_Jira_BugFix_Dataset
+from lib.mining_utils import is_Test, has_Source_Extension, extract_Keys
 from lib.mining_utils import filter_top_frequent_words, is_Valid_Key
 from lib.git_mining import load_Git_BugFix_Dataset, mine_git
 
@@ -51,7 +51,7 @@ def run_Third_Step(project_key: str, project_name: str) -> None:
           + " from Jira and Git repos")
 
     print("  [Step-3.1] Loading CSV with Jira bug-fix info...")
-    jira_issues = loadJiraBugFixDataset(project_key)
+    jira_issues = load_Jira_BugFix_Dataset(project_key)
 
     print("  [Step-3.2] Loading CSV with Git bug-fix info...")
     git_issues = load_Git_BugFix_Dataset(project_key)
@@ -417,7 +417,7 @@ def fetch_Bug_CommitLog(
         if(has_Source_Extension(modification.filename)):
             isSrc = 1
 
-            if(isTest(file_path)):
+            if(is_Test(file_path)):
                 is_test = 1
 
         events.append([project,

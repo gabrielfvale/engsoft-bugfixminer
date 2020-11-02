@@ -335,7 +335,7 @@ def jira_To_CSV(project: str, issues: tuple) -> None:
         dataset = dataset.append(pandas.Series(
             issue.to_list(), index=dataset.columns), ignore_index=True)
 
-    with open("dataset/snapshot/"
+    with open("./dataset/snapshot/"
               + project.lower()
               + "-jira-bug-fix-dataset.csv", 'a') as file:
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
@@ -365,7 +365,7 @@ def mine_jira(
 
 
 def load_Jira_BugFix_Dataset(project: str) -> pandas.DataFrame:
-    return pandas.read_csv("dataset/snapshot/"
+    return pandas.read_csv("./dataset/snapshot/"
                            + project.lower()
                            + "-jira-bug-fix-dataset.csv",
                            index_col=None,

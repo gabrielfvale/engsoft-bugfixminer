@@ -19,9 +19,6 @@ from lib.mining_utils import filter_top_frequent_words, is_Valid_Key
 from lib.git_mining import load_Git_BugFix_Dataset, mine_git
 
 
-PROJECTS_PATH = r'projects.csv'
-
-
 # =======================Bug-Fix dataset mining code======================= #
 
 
@@ -107,8 +104,8 @@ def run_First_Step(
               to_date.strftime("%Y/%m/%d"))
 
 
-def mine_BugFix(since_date: datetime, to_date: datetime) -> None:
-    projects = pandas.read_csv(PROJECTS_PATH,
+def mine_BugFix(projects_path: str, since_date: datetime, to_date: datetime) -> None:
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -191,11 +188,11 @@ def fetch_Bug_ChangeLog(
     return events
 
 
-def mine_Bugs_ChangeLog() -> None:
+def mine_Bugs_ChangeLog(projects_path: str) -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -306,11 +303,11 @@ def fetch_Bug_CommentsLog(
     return events
 
 
-def mine_Bugs_CommentsLog() -> None:
+def mine_Bugs_CommentsLog(projects_path: str) -> None:
 
     last_repo = None
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -447,10 +444,10 @@ def fetch_Bug_CommitLog(
     return events
 
 
-def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
+def mine_Bugs_CommitsLog(projects_path: str, since_date: datetime, to_date: datetime) -> None:
     last_repo = []
 
-    projects = pandas.read_csv(PROJECTS_PATH,
+    projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
                                delimiter=';')
@@ -555,6 +552,8 @@ def mine_Bugs_CommitsLog(since_date: datetime, to_date: datetime) -> None:
 # ==============================Run study code============================== #
 
 def main():
+    projects_path = os.path.join("projects.csv")
+
     main_parser = argparse.ArgumentParser(
         description="Bug fix miner using JIRA and GIT")
 
@@ -564,7 +563,7 @@ def main():
 
     path_parser = argparse.ArgumentParser(add_help=False)
     path_parser.add_argument(
-        "-p", "--path", help="The projects PATH", metavar="", default="projects.csv")
+        "-p", "--path", help="The projects PATH", default="projects.csv")
 
     # Create subparsers
     subparsers = main_parser.add_subparsers(title="actions", dest="action")
@@ -589,29 +588,29 @@ def main():
     args = main_parser.parse_args()
     action = args.action;
 
-    projects_path = os.path.join(args.path)
+    if action and args.path:
+      projects_path = os.path.join(args.path)
 
     if action == "bugfix":
       os.makedirs(os.path.join("dataset", "snapshot"), exist_ok=True)
       since_date = datetime.strptime(args.period[0], '%Y-%m-%d')
       to_date = datetime.strptime(args.period[1], '%Y-%m-%d')
-      mineBugFix(since_date, to_date)
+      mine_BugFix(projects_path, since_date, to_date)
 
     if action == "changelog":
       os.makedirs(os.path.join("dataset", "changelog"), exist_ok=True)
-      mineBugsChangeLog()
+      mine_Bugs_ChangeLog(projects_path)
 
     if action == "comments":
       os.makedirs(os.path.join("dataset", "comment-log"), exist_ok=True)
-      mineBugsChangeLog()
+      mine_Bugs_CommentsLog(projects_path)
 
     if action == "commits":
       os.makedirs(os.path.join("dataset", "commit-log"), exist_ok=True)
       since_date = datetime.strptime(args.period[0], '%Y-%m-%d')
       to_date = datetime.strptime(args.period[1], '%Y-%m-%d')
-      mineBugsCommitsLog(since_date, to_date)
+      mine_Bugs_CommitsLog(projects_path, since_date, to_date)
 
 
 if __name__ == "__main__":
     main()
-

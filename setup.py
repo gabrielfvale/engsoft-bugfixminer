@@ -15,5 +15,10 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
     ],
+    entry_points={
+        'console_scripts': [
+            'bugfixminer=bugfixminer:main'
+        ]
+    },
     python_requires='>=3.7',
 )

@@ -225,7 +225,7 @@ def git_To_CSV(project: str, issues: list) -> None:
                 pandas.Series(issue.to_list(), index=dataset.columns),
                 ignore_index=True)
 
-    with open("dataset/snapshot/"
+    with open("./dataset/snapshot/"
               + project.lower()
               + "-git-bug-fix-dataset.csv", 'a') as file:
         dataset.to_csv(file, sep=';', encoding='utf-8', index=False)
@@ -257,7 +257,7 @@ def mine_git(
 
 
 def load_Git_BugFix_Dataset(project: str) -> pandas.DataFrame:
-    return pandas.read_csv("dataset/snapshot/"
+    return pandas.read_csv("./dataset/snapshot/"
                            + project.lower()
                            + "-git-bug-fix-dataset.csv",
                            index_col=None, header=0,

@@ -97,6 +97,23 @@ def fill_jira_bug_info(
         project_manager: str,
         project_category: str) -> JiraBugInfo:
 
+    """Fills the buginfo for a particular JIRA project.
+
+    From a JIRA project, fills the buginfo metadata, adding attributes as
+    necessary and filtering useful data.
+
+    Args:
+        issue: The issue the bug is currently related to.
+        jira: JIRA bindings for Python.
+        jira_project: The name of the JIRA project.
+        project_owner: The repository owner.
+        project_manager: The repository manager.
+        project_category: The category the repository fits in.
+
+    Returns:
+        An instance of a model Class containing the buginfo metadata.
+    """
+
     bugInfo = JiraBugInfo(
         jira_project,
         project_owner,
@@ -224,6 +241,26 @@ def fetch_bug_fix_info_from_jira(
         offset: str,
         since_date: datetime,
         to_date: datetime) -> tuple:
+
+    """Fetches the bugfix metadata from a JIRA repository.
+
+    Takes the JIRA repository issues and queries for the info related
+    to bug issues.
+
+    Args:
+        jira_repository: The name of the JIRA repository.
+        jira_project: The path of the JIRA project CSV.
+        project_owner: The repository owner.
+        project_manager: The repository manager.
+        project_category: The category the repository fits in.
+        offset: The maximum results cap.
+        since_date: The first date of the lookup.
+        to_date: The last date of the lookup.
+
+    Returns:
+        A tuple containing the metadata for the bugfix info.
+    """
+
     jira_options = {'server': jira_repository}
     jira = JIRA(options=jira_options)
     issue_fields = '''project,
@@ -298,6 +335,17 @@ def fetch_bug_fix_info_from_jira(
 
 def jira_To_CSV(project: str, issues: tuple) -> None:
 
+    """Converts a repository dataset to a JIRA CSV.
+
+    Loads the main project CSV into a pandas DataFrame, to further proccess
+    and filter the data into a more organized CSV, using predefined headers.
+    Writes the CSV to a file.
+
+    Args:
+        project: The path of the project CSV.
+        issues: A tuple of issue names.
+    """
+
     header = ['Project',
               'Owner',
               'Manager',
@@ -349,6 +397,22 @@ def mine_jira(
         category: str,
         since_date: datetime,
         to_date: datetime) -> None:
+
+    """Mines a JIRA repository.
+
+    From a JIRA repository, fetches the bugfix info from the issues and
+    then saves it to a CSV file.
+
+    Args:
+        jira_repository: The name of the JIRA repository.
+        project: The path of the project CSV.
+        owner: The repository owner.
+        manager: The repository manager.
+        category: The category the repository fits in.
+        since_date: The first date of the lookup.
+        to_date: The last date of the lookup.
+    """
+
     print("  [Step-1.2] Fetching bug-fix info from Jira...")
     mined_issues = fetch_bug_fix_info_from_jira(
         jira_repository,
@@ -365,6 +429,20 @@ def mine_jira(
 
 
 def load_Jira_BugFix_Dataset(project: str) -> pandas.DataFrame:
+
+    """Loads the JIRA Bugfix Dataset from a CSV file.
+
+    Takes the input CSV and converts it to a pandas DataFrame, using
+    the dataset snapshot for JIRA Bugfix.
+
+    Args:
+        project: The path of the project CSV.
+    
+    Returns:
+        A pandas DataFrame mapping the Creation, Resolution and First
+        and Last dates.
+    """
+
     return pandas.read_csv("./dataset/snapshot/"
                            + project.lower()
                            + "-jira-bug-fix-dataset.csv",

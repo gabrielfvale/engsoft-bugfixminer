@@ -14,6 +14,19 @@ TOP_MOST_FREQUENT_WORDS = 1000
 
 
 def filter_top_frequent_words(text: str) -> str:
+
+    """Filters the top frequent words (NLP) in a text string.
+
+    From a text string, tokenize and match the words to a group, filters
+    words and adds them to a most common words list
+
+    Args:
+        project: The path of the project CSV.
+    
+    Returns:
+        A string containing pairs of frequent words.
+    """
+
     if(text is not None):
         text = text.lower()
 
@@ -57,6 +70,16 @@ def filter_top_frequent_words(text: str) -> str:
 
 
 def has_Source_Extension(file_name: str) -> bool:
+
+    """Checks if a file contains common programming language extensions.
+
+    Args:
+        file_name: The name of the file to check.
+    
+    Returns:
+        A boolean representing if wether or not the file has a useful extension.
+    """
+
     src_extensions = (".clj",
                       ".scala",
                       ".java",
@@ -82,6 +105,16 @@ def has_Source_Extension(file_name: str) -> bool:
 
 
 def is_Test(file_path: str) -> bool:
+
+    """Checks if a file categorizes as a test.
+
+    Args:
+        file_path: The path of the file to check.
+    
+    Returns:
+        A boolean representing if wether or not the file is a test.
+    """
+
     test_clues = ["/test/", "test/", "/test", "/tests/", "tests/", "/tests"]
     for clue in test_clues:
         if(clue in file_path):
@@ -90,6 +123,16 @@ def is_Test(file_path: str) -> bool:
 
 
 def extract_Keys(message: str) -> list:
+
+    """Extracts keys from a message string.
+
+    Args:
+        message: The string to gather the keys.
+    
+    Returns:
+        A list of the keys found.
+    """
+
     keys = []
 
     if(message is None):
@@ -101,7 +144,17 @@ def extract_Keys(message: str) -> list:
     return keys
 
 
-def is_Valid_Key(message: str) -> None:
+def is_Valid_Key(message: str) -> bool:
+
+    """Tries to match a message key through a RegEx.
+
+    Args:
+        message: The message to check.
+    
+    Returns:
+        A boolean if the message passed the RegEx test.
+    """
+
     if(message is None):
         return False
 

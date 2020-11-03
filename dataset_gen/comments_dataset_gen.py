@@ -14,6 +14,22 @@ def fetch_Bug_CommentsLog(
             manager: str,
             category: str,
             issue_key: str) -> list:
+
+    """Fetches Bug Comments log from a JIRA project.
+
+    From a JIRA repository and its data, fetches the Comments Log of the project.
+
+    Args:
+        jira: JIRA bindings for Python.
+        project: The name of the project to fetch.
+        manager: The repository manager.
+        category: The category the repository fits in.
+        issue_key: The key of the issue to fetch comments of.
+
+    Returns:
+        A list of comments log.
+    """
+
     events = []
 
     try:
@@ -38,6 +54,15 @@ def fetch_Bug_CommentsLog(
 
 
 def mine_Bugs_CommentsLog(projects_path: str) -> None:
+
+    """Mines the bug comments log CSV file.
+
+    Takes the input CSV and runs a few steps of processing to mine comments log
+    data of bugfix repositories.
+
+    Args:
+        projects_path: The path of the project CSV.
+    """
 
     last_repo = None
 

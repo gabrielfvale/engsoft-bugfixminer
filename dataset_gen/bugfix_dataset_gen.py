@@ -7,6 +7,20 @@ from lib.jira_mining import load_Jira_BugFix_Dataset, mine_jira
 
 
 def load_BugFix_Dataset(project: str) -> pandas.DataFrame:
+
+    """Loads the Bugfix Dataset from a CSV file.
+
+    Takes the input CSV and converts it to a pandas DataFrame, using
+    the dataset snapshot for Bugfix.
+
+    Args:
+        project: The path of the project CSV.
+    
+    Returns:
+        A pandas DataFrame mapping the Creation, Resolution and First
+        and Last dates.
+    """
+
     return pandas.read_csv("./dataset/snapshot/"
                            + project.lower()
                            + "-full-bug-fix-dataset.csv",
@@ -89,6 +103,18 @@ def run_First_Step(
 
 
 def mine_BugFix(projects_path: str, since_date: datetime, to_date: datetime) -> None:
+
+    """Mines the bugfix CSV file.
+
+    Takes the input CSV and runs a few steps of processing to mine JIRA and GIT
+    bugfix repositories.
+
+    Args:
+        projects_path: The path of the project CSV.
+        since_date: The first date of the lookup.
+        to_date: The last date of the lookup.
+    """
+
     projects = pandas.read_csv(projects_path,
                                index_col=None,
                                header=0,
@@ -122,4 +148,3 @@ def mine_BugFix(projects_path: str, since_date: datetime, to_date: datetime) -> 
         print("===================================================" +
               "===========================================================")
         print()
-

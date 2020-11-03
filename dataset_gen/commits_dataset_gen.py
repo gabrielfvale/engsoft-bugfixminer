@@ -12,6 +12,23 @@ def fetch_Bug_CommitLog(
             category: str,
             bug_key: str,
             commit: Commit) -> list:
+
+    """Fetches Bug Commit log from a JIRA project.
+
+    From a JIRA repository and its data, fetches the Commit Log of the project.
+
+    Args:
+        jira: JIRA bindings for Python.
+        project: The name of the project to fetch.
+        manager: The repository manager.
+        category: The category the repository fits in.
+        bug_key: The key of the bug to fetch commits of.
+        commit: A commit related to the bug.
+
+    Returns:
+        A list of commits log.
+    """
+
     events = []
 
     isMerge = 0
@@ -64,6 +81,16 @@ def fetch_Bug_CommitLog(
 
 
 def mine_Bugs_CommitsLog(projects_path: str, since_date: datetime, to_date: datetime) -> None:
+
+    """Mines the bug commits log CSV file.
+
+    Takes the input CSV and runs a few steps of processing to mine commits log
+    data of bugfix repositories.
+
+    Args:
+        projects_path: The path of the project CSV.
+    """
+
     last_repo = []
 
     projects = pandas.read_csv(projects_path,

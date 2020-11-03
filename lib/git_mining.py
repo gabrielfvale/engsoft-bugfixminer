@@ -86,6 +86,17 @@ class GitBugInfo:
 def fill_git_bug_info(
             bugInfo: GitBugInfo,
             commit: Commit) -> None:
+
+    """Fills the buginfo for a particular GIT commit.
+
+    From a JIRA project, fills the buginfo metadata, adding attributes as
+    necessary and filtering useful data.
+
+    Args:
+        buginfo: A GitBugInfo instance to fill the metadata.
+        commit: A commit related to the bug.
+    """
+
     if(commit.merge):
         bugInfo.hasMergeCommit = 1
 
@@ -149,6 +160,22 @@ def fetch_BugFix_Info_From_Git(
             jira_issues_keys: list,
             since_date: datetime,
             to_date: datetime) -> list:
+
+    """Fetches the bugfix metadata from a GIT repository.
+
+    Takes the GIT repository and the JIRA issues and queries for the info
+    related to bug issues.
+
+    Args:
+        git_repositories: A list of the repositories to fetch.
+        jira_issues_keys: A list of identifiable issue keys.
+        since_date: The first date of the lookup.
+        to_date: The last date of the lookup.
+
+    Returns:
+        A list containing the metadata for the bugfix info.
+    """
+
     issues = {}
     offset = 0
     interation = 1
@@ -191,6 +218,16 @@ def fetch_BugFix_Info_From_Git(
 
 
 def git_To_CSV(project: str, issues: list) -> None:
+
+    """Converts a repository dataset to a GIT CSV.
+
+    Loads the main project CSV into a pandas DataFrame, to further proccess
+    and filter the data into a more organized CSV, using predefined headers.
+    Writes the CSV to a file.
+
+    Args:
+        project: The path of the project CSV.
+    """
 
     header = ['Key',
               'HasMergeCommit',
@@ -237,6 +274,18 @@ def mine_git(
             since_date: datetime,
             to_date: datetime) -> None:
 
+    """Mines a list of repositories.
+
+    Takes a list of repositories and mines (generates Datasets) from JIRA,
+    using the issues system. Finally, converts the mined data do CSV.
+
+    Args:
+        git_repositories: A list of git repositories.
+        project: The path of the project CSV.
+        since_date: The first date of the lookup.
+        to_date: The last date of the lookup.
+    """
+
     mined_issues = []
 
     print("  [Step-2.1] Loading CSV file with bug-fix info from Jira...")
@@ -257,6 +306,20 @@ def mine_git(
 
 
 def load_Git_BugFix_Dataset(project: str) -> pandas.DataFrame:
+
+    """Loads the Bugfix Dataset from a CSV file.
+
+    Takes the input CSV and converts it to a pandas DataFrame, using
+    the dataset snapshot for Bugfix.
+
+    Args:
+        project: The path of the project CSV.
+    
+    Returns:
+        A pandas DataFrame mapping the dates of commit Authors and
+        Committers, using First and Last dates.
+    """
+
     return pandas.read_csv("./dataset/snapshot/"
                            + project.lower()
                            + "-git-bug-fix-dataset.csv",

@@ -1,0 +1,23 @@
+# Linguagem sendo utilizada
+language: python
+
+# Versões do Python
+python:
+  - "3.7"
+  - "3.8"
+
+# Instalar as dependências
+install:
+#   - pip install .
+   - pip install -r requirements.txt
+
+# Script para rodar os tests
+script:
+  - py.test tests/test_jira_bug_info.py
+  - py.test tests/test_git_mining.py
+  - py.test tests/test_mining_utils.py
+
+#after_script:
+#notifications:
+  #recipients:
+    #- davisegundo626@gmail.com

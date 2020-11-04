@@ -13,6 +13,22 @@ def fetch_Bug_ChangeLog(
             manager: str,
             category: str,
             issue_key: str) -> list:
+
+    """Fetches Bug Changelog from a JIRA project.
+
+    From a JIRA repository and its data, fetches the Changelog of the project.
+
+    Args:
+        jira: JIRA bindings for Python.
+        project: The name of the project to fetch.
+        manager: The repository manager.
+        category: The category the repository fits in.
+        issue_key: The key of the issue to fetch the changelog of.
+
+    Returns:
+        A list of changelog.
+    """
+
     events = []
 
     try:
@@ -54,6 +70,15 @@ def fetch_Bug_ChangeLog(
 
 
 def mine_Bugs_ChangeLog(projects_path: str) -> None:
+
+    """Mines the bug changelog CSV file.
+
+    Takes the input CSV and runs a few steps of processing to mine changelog data
+    of bugfix repositories.
+
+    Args:
+        projects_path: The path of the project CSV.
+    """
 
     last_repo = None
 
@@ -124,7 +149,7 @@ def mine_Bugs_ChangeLog(projects_path: str) -> None:
                   + " bug issues mined...")
 
         print("  [Step-3.0] Saving the bug-fix change log...")
-        with open("../dataset/changelog/"
+        with open("./dataset/changelog/"
                   + row['JiraName'].lower()
                   + "-bug-fix-changelog-dataset.csv", 'a') as file:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)
@@ -134,7 +159,3 @@ def mine_Bugs_ChangeLog(projects_path: str) -> None:
               + str(duration_time.total_seconds()) + "s")
         print("===================================================" +
               "===========================================================")
-
-
-
-

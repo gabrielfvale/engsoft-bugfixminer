@@ -6,8 +6,9 @@
 
 ## 🧾Table of contents
 - [About](#-About)
-- [Installing](#-Installing)
+- [Requirements](#-Requirements)
 - [Source code](#Source-code)
+- [Install](#Install)
 
 ---
 
@@ -16,9 +17,14 @@
 
 ---
 
-### Installing
+### Requirements
+ - Jira
+ - Pydriller
+ - nltk
+ - pandas
+ 
+ The list of dependencies is shown in ./requirements.txt
 
-installing procedure goes here
 
 ---
 
@@ -30,3 +36,12 @@ installing procedure goes here
 
 
 ```
+
+---
+
+### Install
+
+after you've cloned the repository, just use:
+    > bugfixminer [opition] [period]
+- options: bugfix, comments, commits, changelog
+- period: yyyy-mm-dd

@@ -149,7 +149,7 @@ def mine_Bugs_ChangeLog(projects_path: str) -> None:
                   + " bug issues mined...")
 
         print("  [Step-3.0] Saving the bug-fix change log...")
-        with open("../dataset/changelog/"
+        with open("./dataset/changelog/"
                   + row['JiraName'].lower()
                   + "-bug-fix-changelog-dataset.csv", 'a') as file:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)

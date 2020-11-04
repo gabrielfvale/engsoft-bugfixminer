@@ -132,7 +132,7 @@ def mine_Bugs_CommentsLog(projects_path: str) -> None:
                   + " bug issues mined...")
 
         print("  [Step-3.0] Saving the bug-fix comments log...")
-        with open("../dataset/comment-log/"
+        with open("./dataset/comment-log/"
                   + row['JiraName'].lower()
                   + "-bug-fix-comment-log-dataset.csv", 'a') as file:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)

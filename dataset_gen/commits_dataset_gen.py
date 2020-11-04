@@ -183,7 +183,7 @@ def mine_Bugs_CommitsLog(projects_path: str, since_date: datetime, to_date: date
 
         print("  [Step-3.0] Saving the bug-fix commits log...")
 
-        with open("../dataset/commit-log/"
+        with open("./dataset/commit-log/"
                   + row['JiraName'].lower()
                   + "-bug-fix-commit-log-dataset.csv", 'a') as file:
             log.to_csv(file, sep=';', encoding='utf-8', index=False)

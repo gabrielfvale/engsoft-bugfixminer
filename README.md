@@ -42,6 +42,8 @@
 ### Install
 
 after you've cloned the repository, just use:
-    > bugfixminer [opition] [period]
+```
+    > python3 bugfixminer [opition] [period]
+```
 - options: bugfix, comments, commits, changelog
 - period: yyyy-mm-dd
